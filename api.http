@@ -1,0 +1,101 @@
+### Register user
+
+POST http://localhost:9090/user/register 
+Content-Type: application/json
+
+{
+    "username": "ram",
+    "name": "ram",
+    "email": "ram@gmail.com",
+    "password": "ram@123"
+}
+
+### Login User
+
+POST http://localhost:9090/user/login 
+Content-Type: application/json
+
+{
+    "email": "ram@gmail.com",
+    "password": "ram@123"
+}
+
+### getUserAndProfile
+
+GET http://localhost:9090/user/get_user_and_profile 
+Content-Type: application/json
+
+{
+    "token": "fd23ac6b4dbd874cbb7a76c592e96977c26637038e3bf7f6150848639068ec0d"
+}
+
+### updateProfileData
+
+post http://localhost:9090/user/update_profile_data 
+Content-Type: application/json
+
+{
+    "token": "fd23ac6b4dbd874cbb7a76c592e96977c26637038e3bf7f6150848639068ec0d",
+    "bio": "Hi my name is ram, I am currently in 6th sem of my b.tech at baderia BGIEM",
+    "currentPost": "",
+    "pastWork": [
+        {
+            "company": "Microsoft",
+            "position": "CTO",
+            "years": "2+"
+        }
+    ],
+    "education": [
+        {
+            "school": "BGIEM",
+            "degree": "B.Tech",
+            "fieldOfStudy": "2022-2026"
+        }
+    ]
+}
+
+### getAllUserProfiles
+
+GET http://localhost:9090/user/get_all_users_profile
+Content-Type: application/json
+
+### downloadProfile
+
+GET http://localhost:9090/user/get_all_user_profiles 
+Content-Type: application/json
+
+### sendConnectionRequest
+
+POST http://localhost:9090/user/sent_connection_request 
+Content-Type: application/json
+
+{
+    "token": "fd23ac6b4dbd874cbb7a76c592e96977c26637038e3bf7f6150848639068ec0d",
+    "connectionId": "6829d21e5abcf7616b9329b0"
+}
+
+### getMyConnectionRequest
+
+GET http://localhost:9090/user/connection_requests_send 
+Content-Type: application/json
+
+{
+    "token": "e6ef2022c6a55930f46f3797f82eed5b87c64f10b11aad9ebea2b91de5eaec9f"
+}
+
+### othersConnectionRequestToMe
+
+GET http://localhost:9090/user/connection_requests_received 
+Content-Type: application/json
+
+{
+    "token": "e6ef2022c6a55930f46f3797f82eed5b87c64f10b11aad9ebea2b91de5eaec9f"
+}
+
+### <--- POST ---> ###
+
+###getAllPosts
+
+GET http://localhost:9090/post/get_all_posts
+Content-Type: application/json
+
