@@ -12,32 +12,52 @@ const convertUserDataToPDF = async (userData) => {
   const outputPath = crypto.randomBytes(32).toString("hex") + ".pdf";
   const stream = fs.createWriteStream("uploads/" + outputPath);
   doc.pipe(stream);
-  doc.image(`uploads/${userData.userId.profilePicture}`, {
+  doc.image(`uploads/${userData?.userId?.profilePicture}`, {
     align: "center",
     width: 100,
   });
-  doc.fontSize(14).text(`<-- Details -->`);
-  doc.fontSize(14).text(`--------------------------`);
-  doc.fontSize(14).text(`Name: ${userData.userId.name}`);
-  doc.fontSize(14).text(`Username: ${userData.userId.username}`);
-  doc.fontSize(14).text(`Email: ${userData.userId.email}`);
-  doc.fontSize(14).text(`Bio: ${userData.bio}`);
-  doc.fontSize(14).text(`CurrentPost: ${userData.currentPost}`);
-  doc.fontSize(14).text(`--------------------------`);
-  doc.fontSize(14).text(`<-- PastWork -->`);
-  userData.pastWork.forEach((work, index) => {
-    doc.fontSize(14).text(`- Company: ${work.company}`);
-    doc.fontSize(14).text(`- Position: ${work.position}`);
-    doc.fontSize(14).text(`- Experience: ${work.years}`);
+
+  doc.moveDown(1);
+
+  doc
+    .fontSize(16)
+    .fillColor("#000")
+    .text("Personal Details", { underline: true })
+    .moveDown(0.5);
+
+  doc.fontSize(12);
+  doc.text(`Name: ${userData.userId.name}`);
+  doc.text(`Username: ${userData.userId.username}`);
+  doc.text(`Email: ${userData.userId.email}`);
+  doc.text(`Bio: ${userData.bio || "N/A"}`);
+  doc.text(`Current Post: ${userData.currentPost || "N/A"}`);
+
+  doc.moveDown(1);
+
+  doc
+    .fontSize(16)
+    .fillColor("#000")
+    .text("Past Work Experience", { underline: true })
+    .moveDown(0.5);
+  userData.pastWork?.forEach((work, index) => {
+    doc.fontSize(12).text(`${index + 1}. Company: ${work.company}`);
+    doc.text(`   Position: ${work.position}`);
+    doc.text(`   Experience: ${work.years} year(s)`);
     doc.moveDown(0.5);
   });
-  doc.fontSize(14).text(`--------------------------`);
-  doc.fontSize(14).text(`<-- Education -->`);
-  userData.education.forEach((data) => {
-    doc.fontSize(14).text(`- School: ${data.school}`);
-    doc.fontSize(14).text(`- Degree: ${data.degree}`);
-    doc.moveDown(0.5);
-    doc.fontSize(14).text(`- FieldOfStudy: ${data.fieldOfStudy}`);
+
+  doc.moveDown(1);
+
+  doc
+    .fontSize(16)
+    .fillColor("#000")
+    .text("Education", { underline: true })
+    .moveDown(0.5);
+
+  userData.education?.forEach((edu, index) => {
+    doc.fontSize(12).text(`${index + 1}. School: ${edu.school}`);
+    doc.text(`   Degree: ${edu.degree}`);
+    doc.text(`   Field of Study: ${edu.fieldOfStudy}`);
     doc.moveDown(0.5);
   });
 
@@ -245,7 +265,6 @@ export const downloadProfile = async (req, res) => {
       "name username email profilePicture"
     );
     const outputPath = await convertUserDataToPDF(userProfile);
-    console.log(userProfile);
     return res.json({ message: outputPath });
   } catch (error) {
     return res
@@ -294,7 +313,7 @@ export const sendConnectionRequest = async (req, res) => {
 };
 
 export const getConnectionRequestsSend = async (req, res) => {
-  const { token } = req.body;
+  const { token } = req.query;
   try {
     const user = await User.findOne({ token });
 
@@ -308,11 +327,11 @@ export const getConnectionRequestsSend = async (req, res) => {
       userId: user._id,
     }).populate("connectionId", "name username email profilePicture");
 
-    if (!connections || connections.length === 0) {
-      return res
-        .status(httpStatus.NOT_FOUND)
-        .json({ message: "No connection requests send" });
-    }
+    // if (!connections || connections.length === 0) {
+    //   return res
+    //     .status(httpStatus.NOT_FOUND)
+    //     .json({ message: "No connection requests send" });
+    // }
 
     return res
       .status(httpStatus.OK)
@@ -325,7 +344,7 @@ export const getConnectionRequestsSend = async (req, res) => {
 };
 
 export const getConnectionRequestsReceived = async (req, res) => {
-  const { token } = req.body;
+  const { token } = req.query;
   try {
     const user = await User.findOne({ token });
 
@@ -339,11 +358,11 @@ export const getConnectionRequestsReceived = async (req, res) => {
       connectionId: user._id,
     }).populate("userId", "name username email profilePicture");
 
-    if (!connections || connections.length === 0) {
-      return res
-        .status(httpStatus.NOT_FOUND)
-        .json({ message: "No connection requests received" });
-    }
+    // if (!connections || connections.length === 0) {
+    //   return res
+    //     .status(httpStatus.NOT_FOUND)
+    //     .json({ message: "No connection requests received" });
+    // }
 
     return res
       .status(httpStatus.OK)
@@ -356,7 +375,7 @@ export const getConnectionRequestsReceived = async (req, res) => {
 };
 
 export const acceptConnectionRequest = async (req, res) => {
-  const { token, requestId, action_type } = req.body;
+  const { token, connectionId, action_type } = req.body;
   try {
     const user = await User.findOne({ token });
     if (!user) {
@@ -364,21 +383,21 @@ export const acceptConnectionRequest = async (req, res) => {
         .status(httpStatus.NOT_FOUND)
         .json({ message: "User not found" });
     }
-    const connections = await ConnectionRequest.find({
-      _id: requestId,
+    const connections = await ConnectionRequest.findOne({
+      connectionId: user._id,
+      userId: connectionId,
     }).populate("userId", "name username email profilePicture");
 
-    if (!connections || connections.length === 0) {
-      return res
-        .status(httpStatus.NOT_FOUND)
-        .json({ message: "No connection requests received" });
-    }
+    // if (!connections || connections.length === 0) {
+    //   return res
+    //     .status(httpStatus.NOT_FOUND)
+    //     .json({ message: "No connection requests received" });
+    // }
     if (action_type === "accept") {
       connections.status_accepted = true;
     } else {
       connections.status_accepted = false;
     }
-    await connections.save();
     await connections.save();
     return res
       .status(httpStatus.OK)
@@ -420,3 +439,4 @@ export const getUserProfileAndUserBasedOnUsername = async (req, res) => {
       .json({ message: error.message });
   }
 };
+
