@@ -8,7 +8,13 @@ const app = express();
 
 app.set("port", process.env.PORT || 9090);
 
-app.use(cors());
+const allowedOrigins = process.env.ALLOWED_ORIGINS.split(",");
+app.use(
+  cors({
+    origin: allowedOrigins,
+  })
+);
+
 app.use(express.json());
 app.use("/", mainRoutes);
 app.use(express.static("uploads")); //relative path
