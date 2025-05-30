@@ -34,11 +34,11 @@ export const getAllPosts = async (req, res) => {
       "userId",
       "username name email profilePicture"
     );
-    if (!posts || posts.length === 0) {
-      return res
-        .status(httpStatus.NOT_FOUND)
-        .json({ message: "posts not found" });
-    }
+    // if (!posts || posts.length === 0) {
+    //   return res
+    //     .status(httpStatus.NOT_FOUND)
+    //     .json({ message: "posts not found" });
+    // }
     return res.status(httpStatus.OK).json({ posts: posts });
   } catch (error) {
     return res

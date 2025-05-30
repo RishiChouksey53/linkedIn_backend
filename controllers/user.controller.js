@@ -66,7 +66,12 @@ const convertUserDataToPDF = async (userData) => {
 };
 
 export const register = async (req, res) => {
-  const { name, username, email, password } = req.body;
+  let { name, username, email, password } = req.body;
+  name = name.trim();
+  email = email.trim();
+  password = password.trim();
+  username = username.trim();
+
   if (!name || !username || !email || !password) {
     return res
       .status(httpStatus.BAD_REQUEST)
@@ -103,7 +108,9 @@ export const register = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-  const { email, password } = req.body;
+  let { email, password } = req.body;
+  email = email.trim();
+  password = password.trim();
   if (!email || !password) {
     return res
       .status(httpStatus.BAD_REQUEST)
@@ -439,4 +446,3 @@ export const getUserProfileAndUserBasedOnUsername = async (req, res) => {
       .json({ message: error.message });
   }
 };
-
