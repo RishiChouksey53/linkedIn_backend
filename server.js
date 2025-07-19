@@ -8,10 +8,10 @@ const app = express();
 
 app.set("port", process.env.PORT || 9090);
 
-const allowedOrigins = process.env.ALLOWED_ORIGINS.split(",");
+// const allowedOrigins = process.env.ALLOWED_ORIGINS.split(",");
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: "https://linked-in-frontend-sigma.vercel.app",
   })
 );
 
